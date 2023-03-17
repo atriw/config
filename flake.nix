@@ -90,7 +90,7 @@
           suites = with profiles; rec {
             base = [];
             dev = base ++ [dev-tools zsh];
-            dev-nvim = dev ++ [nvim];
+            dev-nvim = dev ++ [nvim lang.c lang.nodejs ];
           };
         };
         users = {
@@ -102,6 +102,8 @@
           atriw = {suites, ...}: {
             imports = suites.dev-nvim;
             home.stateVersion = "22.11";
+            programs.git.userName = "atriw";
+            programs.git.userEmail = "875241499@qq.com";
           };
         };
       };

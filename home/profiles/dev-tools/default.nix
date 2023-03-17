@@ -40,6 +40,9 @@
   ];
   configs = {
     git.delta.enable = true;
+    git.extraConfig = {
+      credential.helper = "store";
+    };
     exa.enableAliases = true;
     bat.config = {theme = "TwoDark";};
     fzf.defaultCommand = "rg --files --hidden --glob '!.git'";
