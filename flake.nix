@@ -60,7 +60,7 @@
               users = digga.lib.rakeLeaves ./users;
             };
           suites = with profiles; rec {
-            base = [cachix users.nixos users.root];
+            base = [core.nixos users.nixos users.root];
             wsl-dev = base ++ [wsl users.atriw];
           };
         };
@@ -88,8 +88,8 @@
         importables = rec {
           profiles = digga.lib.rakeLeaves ./home/profiles;
           suites = with profiles; rec {
-            base = [direnv git];
-            dev = base ++ [ripgrep];
+            base = [];
+            dev = base ++ [];
           };
         };
         users = {
