@@ -90,6 +90,7 @@
           suites = with profiles; rec {
             base = [];
             dev = base ++ [dev-tools zsh];
+            dev-nvim = dev ++ [nvim];
           };
         };
         users = {
@@ -99,7 +100,7 @@
             home.stateVersion = "22.11";
           };
           atriw = {suites, ...}: {
-            imports = suites.dev;
+            imports = suites.dev-nvim;
             home.stateVersion = "22.11";
           };
         };
