@@ -61,7 +61,7 @@
             };
           suites = with profiles; rec {
             base = [cachix users.nixos users.root];
-            wsl = base ++ [wsl];
+            wsl-dev = base ++ [wsl];
           };
         };
         hostDefaults = {
