@@ -89,7 +89,7 @@
           profiles = digga.lib.rakeLeaves ./home/profiles;
           suites = with profiles; rec {
             base = [];
-            dev = base ++ [];
+            dev = base ++ [dev-tools zsh];
           };
         };
         users = {
