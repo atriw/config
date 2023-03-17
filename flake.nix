@@ -29,6 +29,9 @@
     digga.inputs.darwin.follows = "blank";
     digga.inputs.deploy.follows = "blank";
     digga.inputs.flake-compat.follows = "blank";
+
+    nixos-wsl.url = "github:nix-community/NixOS-WSL";
+    nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
@@ -37,6 +40,7 @@
     nixos-hardware,
     home-manager,
     digga,
+    nixos-wsl,
     ...
   } @ inputs:
     digga.lib.mkFlake
@@ -57,6 +61,7 @@
             };
           suites = with profiles; rec {
             base = [cachix users.nixos users.root];
+            wsl = base ++ [wsl];
           };
         };
         hostDefaults = {
@@ -71,6 +76,9 @@
         };
         hosts = {
           NixOS = {};
+          Matrix = {
+            modules = [nixos-wsl.nixosModules.wsl];
+          };
         };
       };
 
