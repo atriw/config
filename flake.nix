@@ -61,7 +61,7 @@
             };
           suites = with profiles; rec {
             base = [cachix users.nixos users.root];
-            wsl-dev = base ++ [wsl];
+            wsl-dev = base ++ [wsl users.atriw];
           };
         };
         hostDefaults = {
@@ -89,12 +89,17 @@
           profiles = digga.lib.rakeLeaves ./home/profiles;
           suites = with profiles; rec {
             base = [direnv git];
+            dev = base ++ [ripgrep];
           };
         };
         users = {
           nixos = {suites, ...}: {
             imports = suites.base;
 
+            home.stateVersion = "22.11";
+          };
+          atriw = {suites, ...}: {
+            imports = suites.dev;
             home.stateVersion = "22.11";
           };
         };
