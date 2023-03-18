@@ -100,7 +100,14 @@
           suites = with profiles; rec {
             base = [];
             dev = base ++ [dev-tools zsh];
-            dev-nvim = dev ++ [nvim lang.c lang.nodejs lang.rust ];
+            dev-nvim = dev ++ [
+              nvim
+              lang.c
+              lang.lua
+              lang.nix
+              lang.nodejs
+              lang.rust
+            ];
           };
         };
         users = {

@@ -13,5 +13,6 @@ in
   home.packages = with pkgs; [
     nightly-rust
     vscode-extensions.vadimcn.vscode-lldb
+    taplo # toml lsp
   ];
 }
