@@ -1,5 +1,13 @@
 return {
   {
+    "williamboman/mason.nvim",
+    enabled = false,
+  },
+  {
+    "williamboman/mason-lspconfig.nvim",
+    enabled = false,
+  },
+  {
     "L3MON4D3/LuaSnip",
     -- Disable default <tab> and <s-tab> in LuaSnip
     keys = function()

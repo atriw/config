@@ -17,6 +17,7 @@
     blank.url = "github:divnix/blank";
 
     nixpkgs.url = "github:nixos/nixpkgs/nixos-22.11";
+    latest.url = "github:nixos/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:nixos/nixos-hardware";
 
     home-manager.url = "github:nix-community/home-manager/release-22.11";
@@ -40,6 +41,7 @@
   outputs = {
     self,
     nixpkgs,
+    latest,
     nixos-hardware,
     home-manager,
     digga,
@@ -53,8 +55,10 @@
 
       channels = {
         nixpkgs = {
+          imports = [(digga.lib.importOverlays ./overlays)];
           overlays = [rust-overlay.overlays.default];
         };
+        latest = {};
       };
 
       nixos = {
