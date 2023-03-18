@@ -59,4 +59,3 @@ in {
   home.packages = packages;
   programs = lib.recursiveUpdate (lib.genAttrs program_list (_: {enable = true;})) configs;
 }
-

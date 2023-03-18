@@ -1,4 +1,8 @@
-{hmUsers, pkgs, ...}: {
+{
+  hmUsers,
+  pkgs,
+  ...
+}: {
   home-manager.users = {inherit (hmUsers) atriw;};
 
   users.users.atriw = {
@@ -8,4 +12,3 @@
     shell = pkgs.zsh;
   };
 }
-

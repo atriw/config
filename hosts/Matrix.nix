@@ -3,6 +3,4 @@
   imports = suites.wsl-dev;
 
   wsl.defaultUser = "atriw";
-
 }
-

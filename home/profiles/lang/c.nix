@@ -3,7 +3,6 @@
   lib,
   pkgs,
   ...
-}:
-{
-  home.packages = with pkgs; [ gcc gnumake ];
+}: {
+  home.packages = with pkgs; [gcc gnumake];
 }

@@ -3,7 +3,6 @@
   lib,
   pkgs,
   ...
-}:
-{
-  home.packages = with pkgs; [ nodejs ];
+}: {
+  home.packages = with pkgs; [nodejs];
 }
