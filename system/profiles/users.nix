@@ -5,10 +5,13 @@
 }: {
   home-manager.users = {inherit (hmUsers) atriw;};
 
+  users.users.root.hashedPassword = "*";
+
   users.users.atriw = {
-    password = "nixos";
     isNormalUser = true;
     extraGroups = ["wheel"];
     shell = pkgs.zsh;
+    # TODO: use agenix
+    password = "nixos";
   };
 }

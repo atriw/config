@@ -64,20 +64,16 @@
       nixos = {
         imports = [(digga.lib.importHosts ./hosts)];
         importables = rec {
-          profiles =
-            digga.lib.rakeLeaves ./profiles
-            // {
-              users = digga.lib.rakeLeaves ./users;
-            };
+          profiles = digga.lib.rakeLeaves ./system/profiles;
           suites = with profiles; rec {
-            base = [core.nixos users.nixos users.root];
-            wsl-dev = base ++ [wsl users.atriw];
+            base = [core.nixos users];
+            wsl-dev = base ++ [wsl];
           };
         };
         hostDefaults = {
           system = "x86_64-linux";
           channelName = "nixpkgs";
-          imports = [(digga.lib.importExportableModules ./modules)];
+          imports = [(digga.lib.importExportableModules ./system/modules)];
           modules = [
             {lib.our = self.lib;}
             digga.nixosModules.nixConfig
@@ -85,7 +81,6 @@
           ];
         };
         hosts = {
-          NixOS = {};
           Matrix = {
             modules = [nixos-wsl.nixosModules.wsl];
           };
@@ -113,11 +108,6 @@
           };
         };
         users = {
-          nixos = {suites, ...}: {
-            imports = suites.base;
-
-            home.stateVersion = "22.11";
-          };
           atriw = {suites, ...}: {
             imports = suites.dev-nvim;
             home.stateVersion = "22.11";
