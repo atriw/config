@@ -32,6 +32,9 @@
 
     nixos-wsl.url = "github:nix-community/NixOS-WSL";
     nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
+
+    rust-overlay.url = "github:oxalica/rust-overlay";
+    rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
@@ -41,6 +44,7 @@
     home-manager,
     digga,
     nixos-wsl,
+    rust-overlay,
     ...
   } @ inputs:
     digga.lib.mkFlake
@@ -48,7 +52,9 @@
       inherit self inputs;
 
       channels = {
-        nixpkgs = {};
+        nixpkgs = {
+          overlays = [rust-overlay.overlays.default];
+        };
       };
 
       nixos = {
@@ -90,7 +96,7 @@
           suites = with profiles; rec {
             base = [];
             dev = base ++ [dev-tools zsh];
-            dev-nvim = dev ++ [nvim lang.c lang.nodejs ];
+            dev-nvim = dev ++ [nvim lang.c lang.nodejs lang.rust ];
           };
         };
         users = {
@@ -102,6 +108,10 @@
           atriw = {suites, ...}: {
             imports = suites.dev-nvim;
             home.stateVersion = "22.11";
+            home.sessionVariables = {
+              EDITOR = "nvim";
+              SHELL = "zsh";
+            };
             programs.git.userName = "atriw";
             programs.git.userEmail = "875241499@qq.com";
           };

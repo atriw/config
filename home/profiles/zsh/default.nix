@@ -27,6 +27,16 @@ in {
       src = "${omz}/plugins/${p}";
       file = "${p}.plugin.zsh";
     }) plugins;
+    initExtra = ''
+    if test -f ~/.zshrc.local; then
+      . ~/.zshrc.local
+    fi
+    '';
+    envExtra = ''
+    if test -f ~/.zshenv.local; then
+      . ~/.zshenv.local
+    fi
+    '';
   };
 }
 
