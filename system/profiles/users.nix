@@ -1,4 +1,5 @@
 {
+  self,
   hmUsers,
   pkgs,
   ...
@@ -7,11 +8,11 @@
 
   users.users.root.hashedPassword = "*";
 
+  age.secrets.atriw.file = "${self}/secrets/atriw.age";
   users.users.atriw = {
     isNormalUser = true;
     extraGroups = ["wheel"];
     shell = pkgs.zsh;
-    # TODO: use agenix
-    password = "nixos";
+    passwordFile = "/run/agenix/atriw";
   };
 }
