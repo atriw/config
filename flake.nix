@@ -31,6 +31,9 @@
     digga.inputs.deploy.follows = "blank";
     digga.inputs.flake-compat.follows = "blank";
 
+    agenix.url = "github:ryantm/agenix";
+    agenix.inputs.nixpkgs.follows = "nixpkgs";
+
     nixos-wsl.url = "github:nix-community/NixOS-WSL";
     nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -45,6 +48,7 @@
     nixos-hardware,
     home-manager,
     digga,
+    agenix,
     nixos-wsl,
     rust-overlay,
     ...
@@ -60,6 +64,10 @@
         };
         latest = {};
       };
+
+      sharedOverlays = [
+        agenix.overlays.default
+      ];
 
       nixos = {
         imports = [(digga.lib.importHosts ./hosts)];
@@ -121,17 +129,10 @@
         };
       };
 
-      devshell.exportedModules = [
-        (
-          {pkgs, ...}: {
-            commands = [
-              {
-                package = pkgs.nixUnstable;
-              }
-            ];
-          }
-        )
-      ];
+      devshell = {
+        exportedModules = [(import ./shell)];
+        modules = [];
+      };
 
       homeConfigurations = digga.lib.mkHomeConfigurations self.nixosConfigurations;
     };
