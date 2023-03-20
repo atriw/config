@@ -119,6 +119,7 @@
                 lang.nix
                 lang.nodejs
                 lang.rust
+                lang.python
               ];
           };
         };

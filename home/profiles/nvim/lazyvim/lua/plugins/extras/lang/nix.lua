@@ -1,27 +1,14 @@
+local lang = require("lib.lang")
+
 return {
-  {
-    "nvim-treesitter/nvim-treesitter",
-    opts = function(_, opts)
-      vim.list_extend(opts.ensure_installed, { "nix" })
-    end,
-  },
-  {
-    "neovim/nvim-lspconfig",
-    opts = {
-      servers = {
-        nil_ls = { mason = false },
-      },
-    },
-  },
-  {
-    "jose-elias-alvarez/null-ls.nvim",
-    opts = {
-      sources = {
-        require("null-ls").builtins.code_actions.statix,
-        require("null-ls").builtins.diagnostics.deadnix,
-        require("null-ls").builtins.diagnostics.statix,
-        require("null-ls").builtins.formatting.alejandra,
-      },
-    },
-  },
+  lang.add_treesitter_install("nix"),
+  lang.add_lsp_config("nil_ls"),
+  lang.add_null_ls_sources(function(nls)
+    return {
+      nls.builtins.code_actions.statix,
+      nls.builtins.diagnostics.deadnix,
+      nls.builtins.diagnostics.statix,
+      nls.builtins.formatting.alejandra,
+    }
+  end),
 }

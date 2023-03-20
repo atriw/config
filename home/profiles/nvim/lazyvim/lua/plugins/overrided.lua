@@ -8,10 +8,18 @@ return {
     enabled = false,
   },
   {
+    "jose-elias-alvarez/null-ls.nvim",
+    opts = function(_, opts)
+      local count = #opts.sources
+      for i = 0, count do
+        opts.sources[i] = nil
+      end
+    end,
+  },
+  {
     "neovim/nvim-lspconfig",
     opts = {
       servers = {
-        lua_ls = { mason = false },
         jsonls = { mason = false },
       },
     },

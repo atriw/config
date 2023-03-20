@@ -8,4 +8,7 @@ return {
     event = "VeryLazy",
     config = true,
   },
+  {
+    "tpope/vim-sleuth",
+  },
 }
