@@ -25,6 +25,12 @@ return {
     },
   },
   {
+    "nvim-treesitter/nvim-treesitter",
+    opts = function(_, opts)
+      opts.indent["disable"] = nil
+    end,
+  },
+  {
     "L3MON4D3/LuaSnip",
     -- Disable default <tab> and <s-tab> in LuaSnip
     keys = function()
