@@ -31,6 +31,7 @@ in {
       skim
       tealdeer
       whois
+      cached-nix-shell
     ];
 
     # Starship is a fast and featureful shell prompt

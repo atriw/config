@@ -64,7 +64,10 @@
       channels = {
         nixpkgs = {
           imports = [(digga.lib.importOverlays ./overlays)];
-          overlays = [rust-overlay.overlays.default];
+          overlays = [
+            rust-overlay.overlays.default
+            ./pkgs/default.nix
+          ];
         };
         latest = {};
       };
@@ -135,6 +138,7 @@
               EDITOR = "nvim";
               SHELL = "zsh";
             };
+            configDir = ./config;
             programs.git.userName = "atriw";
             programs.git.userEmail = "875241499@qq.com";
             homeage = {

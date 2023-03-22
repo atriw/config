@@ -11,8 +11,6 @@
     sha256 = "sha256-c929KV77wACO0AlEABwOPPz03Za8V4G7RRXalY+zfGg=";
   };
   plugins = [
-    "colored-man-pages"
-    "command-not-found"
     "git"
     "git-extras"
   ];

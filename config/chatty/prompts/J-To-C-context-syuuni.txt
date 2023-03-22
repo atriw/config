@@ -1,0 +1,7 @@
+Context:
+The following text I want you to translate is a first-person view
+novel. The main characters are '仙台葉月' and '宫城志緒理', both of who are
+female college students, and they live together. They are in favor
+of each other, but don't want to express their feelings directly.
+As the characters are at the same age, 'さん' should be translated
+into '同学'.

@@ -1,0 +1,9 @@
+query = ["Translate the following:"]
+chunk_lines = 100
+system_prompt_files = [
+  "J-To-C-Translation",
+  "J-To-C-style-HarukiMurakami",
+  "J-To-C-context-syuuni",
+]
+with_panel = false
+only_result = true

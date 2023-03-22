@@ -37,6 +37,7 @@
     "lazygit"
     "pandoc"
     "zoxide" # z
+    "chat" # ChatGPT cli
   ];
   configs = {
     git.delta.enable = true;
