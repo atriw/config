@@ -9,8 +9,7 @@ from pathlib import Path
 import pickle
 import logging
 from enum import Enum
-from threading import Thread
-import collections
+from concurrent import futures
 import textwrap
 from dataclasses import dataclass
 from itertools import chain
@@ -368,23 +367,22 @@ def process_chat(
             progress.add_task(description="Asking ChatGPT...", total=None)
             (prompts,) = prompt_tasks
             return chat_fn(prompts)
-        tasks = []
-        results = {}
-
-        def th_chat(i: int, prompts: Iterable[Message]):
-            results[i] = chat_fn(prompts)
-
-        for i, prompts in enumerate(prompt_tasks):
-            rich_task = progress.add_task(
-                description=f"Asking ChatGPT... Chunk {i}", total=1
-            )
-            task = Thread(target=th_chat, args=(i, prompts))
-            task.start()
-            tasks.append((task, rich_task))
-        for (task, rich_task) in tasks:
-            task.join()
-            progress.update(rich_task, completed=1)
-        return "\n".join(collections.OrderedDict(sorted(results.items())).values())
+        with futures.ThreadPoolExecutor() as executor:
+            tasks = {
+                executor.submit(chat_fn, prompts): (
+                    i,
+                    progress.add_task(
+                        description=f"Asking ChatGPT... Chunk {i}", total=1
+                    ),
+                )
+                for i, prompts in enumerate(prompt_tasks)
+            }
+            results = {}
+            for task in futures.as_completed(tasks):
+                (i, rich_task) = tasks[task]
+                progress.update(rich_task, completed=1)
+                results[i] = task.result()
+            return "\n".join([results[i] for i in sorted(results.keys())])
 
 
 def format(
