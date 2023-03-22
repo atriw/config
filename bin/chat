@@ -3,6 +3,7 @@
 #! nix-shell -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz
 
 from typing import List, TypedDict, Literal, Optional, Any, Callable
+from collections.abc import Iterable
 import sys
 from pathlib import Path
 import pickle
@@ -11,6 +12,8 @@ from enum import Enum
 from threading import Thread
 import collections
 import textwrap
+from dataclasses import dataclass
+from itertools import chain
 
 import typer
 import openai
@@ -63,13 +66,48 @@ def assistant_message(msg: str) -> Message:
     }
 
 
-def chat(model: str, messages: List[Message], temperature: float) -> str:
+def chat(model: str, messages: Iterable[Message], temperature: float) -> str:
     response = openai.ChatCompletion.create(
         model=model,
-        messages=messages,
+        messages=list(messages),
         temperature=temperature,
     )
     return response.choices[0].message.content
+
+
+@dataclass
+class Messages:
+    query: Optional[Message]
+    chunks: Optional[List[Message]]
+    session: Optional[List[Message]] = None
+    system: Optional[List[Message]] = None
+
+    def is_valid(self) -> bool:
+        return self.query or self.chunks
+
+    def get_tasks(self) -> (Iterable[Iterable[Message]], int):
+        if not self.chunks:
+            return ([self.get_prompts()], 1)
+        return (
+            (chain(self.get_prompts(), [chunk]) for chunk in self.chunks),
+            len(self.chunks),
+        )
+
+    def get_prompts(self, with_session=True) -> Iterable[Message]:
+        iters = []
+        if self.session and with_session:
+            iters.append(self.session)
+        if self.system:
+            iters.append(self.system)
+        if self.query:
+            iters.append([self.query])
+        return chain(*iters)
+
+
+def get_query(q: List[str]) -> Optional[Message]:
+    if not q:
+        return None
+    return user_message(" ".join(q))
 
 
 def get_chunks(chunk_lines: int) -> Optional[List[Message]]:
@@ -88,13 +126,7 @@ def get_chunks(chunk_lines: int) -> Optional[List[Message]]:
     ]
 
 
-def get_query(q: List[str]) -> Optional[Message]:
-    if not q:
-        return None
-    return user_message(" ".join(q))
-
-
-def get_system_prompts(paths: Optional[List[Path]]) -> List[Message]:
+def get_system_prompts(paths: Optional[List[Path]]) -> Optional[List[Message]]:
     prompts = []
     if not paths:
         return prompts
@@ -130,6 +162,29 @@ def find_valid(
             if pp.is_file():
                 return pp
     return None
+
+
+def try_load_session(p: Path) -> Optional[List[Message]]:
+    if not p.is_file():
+        log.warning(f"Cannot read {p}")
+        return None
+    try:
+        with p.open("rb") as f:
+            return pickle.load(f)
+    except Exception as e:
+        log.warning(f"Failed to load session: {e}")
+
+
+def try_write_session(p: Path, messages: List[Message]):
+    if p.is_dir():
+        log.warning(f"Cannot write to dir: {p}")
+        return
+    try:
+        p.parent.mkdir(exist_ok=True, parents=True)
+        with p.open("wb") as f:
+            pickle.dump(messages, f)
+    except Exception as e:
+        log.warning(f"Failed to write session: {e}")
 
 
 class LogLevel(str, Enum):
@@ -225,6 +280,11 @@ def main(
     with_panel: bool = typer.Option(
         True, help="Wrap results in panel", rich_help_panel="Display Options"
     ),
+    full_session: bool = typer.Option(
+        False,
+        help="Display full session, otherwise only current chat",
+        rich_help_panel="Display Options",
+    ),
     only_result: bool = typer.Option(
         False,
         help="Only display chat result, no prompt",
@@ -259,33 +319,31 @@ def main(
         f"Session path is {session_path}, last session path is {last_session_path}"
     )
 
-    chunks = get_chunks(chunk_lines)
-    query_joined = get_query(query)
-    if not query_joined and not chunks:
+    messages = Messages(get_query(query), get_chunks(chunk_lines))
+
+    if not messages.is_valid():
         console.print("No query provided")
         raise typer.Exit(code=1)
-    prompts = []
+
     if cont:
-        prompts = try_load_session(session_path) or []
-    prompts.extend(get_system_prompts(system_prompt_files))
-    if query_joined:
-        prompts.append(query_joined)
-    if chunks and len(chunks) == 1:
-        prompts.append(chunks[0])
-        chunks = []
+        messages.session = try_load_session(session_path)
+    messages.system = get_system_prompts(system_prompt_files)
 
     result = process_chat(
-        prompts, chunks, lambda messages: chat(model.value, messages, temperature)
+        messages, lambda messages: chat(model.value, messages, temperature)
     )
 
     short_result = textwrap.shorten(result, width=70)
     log.debug(f"Short result: {short_result}")
 
     # Chunks are too large to fit a session.
-    try_write_session(last_session_path, prompts + [assistant_message(result)])
+    try_write_session(
+        last_session_path,
+        list(chain(messages.get_prompts(), [assistant_message(result)])),
+    )
 
     def print_output():
-        renderables = format(prompts, chunks, result, with_panel, only_result)
+        renderables = format(messages, result, with_panel, full_session, only_result)
         for obj in renderables:
             console.print(obj)
 
@@ -297,29 +355,30 @@ def main(
 
 
 def process_chat(
-    prompts: List[Message],
-    chunks: Optional[List[Message]],
-    chat_fn: Callable[[List[Message]], str],
+    messages: Messages,
+    chat_fn: Callable[[Iterable[Message]], str],
 ) -> str:
     with Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
         transient=True,
     ) as progress:
-        if not chunks:
+        prompt_tasks, count = messages.get_tasks()
+        if count == 1:
             progress.add_task(description="Asking ChatGPT...", total=None)
+            (prompts,) = prompt_tasks
             return chat_fn(prompts)
         tasks = []
         results = {}
 
-        def th_chat(i: int, chunk: str):
-            results[i] = chat_fn(prompts + [chunk])
+        def th_chat(i: int, prompts: Iterable[Message]):
+            results[i] = chat_fn(prompts)
 
-        for i, chunk in enumerate(chunks):
+        for i, prompts in enumerate(prompt_tasks):
             rich_task = progress.add_task(
                 description=f"Asking ChatGPT... Chunk {i}", total=1
             )
-            task = Thread(target=th_chat, args=(i, chunk))
+            task = Thread(target=th_chat, args=(i, prompts))
             task.start()
             tasks.append((task, rich_task))
         for (task, rich_task) in tasks:
@@ -329,10 +388,10 @@ def process_chat(
 
 
 def format(
-    prompts: List[Message],
-    chunks: Optional[List[Message]],
+    messages: Messages,
     result: str,
     with_panel: bool,
+    full_session: bool,
     only_result: bool,
 ) -> List[Any]:
     def wrap(obj: Any, title: str, border_style: str) -> Any:
@@ -349,16 +408,20 @@ def format(
         "user": ("Query", "blue"),
         "assistant": ("Assistant", "red"),
     }
+
+    prompts = messages.get_prompts(full_session)
+
     for prompt in prompts:
         (title, border_style) = styles[prompt["role"]]
         outputs.append(wrap(prompt["content"], title, border_style))
-    if chunks:
+
+    if messages.chunks:
         outputs.append(
             wrap(
                 "\n".join(
                     [
                         f"Chunk {i}: " + textwrap.shorten(chunk["content"], width=70)
-                        for i, chunk in enumerate(chunks)
+                        for i, chunk in enumerate(messages.chunks)
                     ]
                 ),
                 "Chunks",
@@ -367,29 +430,6 @@ def format(
         )
     outputs.append(result_rendered)
     return outputs
-
-
-def try_load_session(p: Path) -> Optional[List[Message]]:
-    if not p.is_file():
-        log.warning(f"Cannot read {p}")
-        return None
-    try:
-        with p.open("rb") as f:
-            return pickle.load(f)
-    except Exception as e:
-        log.warning(f"Failed to load session: {e}")
-
-
-def try_write_session(p: Path, messages: List[Message]):
-    if p.is_dir():
-        log.warning(f"Cannot write to dir: {p}")
-        return
-    try:
-        p.parent.mkdir(exist_ok=True, parents=True)
-        with p.open("wb") as f:
-            pickle.dump(messages, f)
-    except Exception as e:
-        log.warning(f"Failed to write session: {e}")
 
 
 if __name__ == "__main__":
