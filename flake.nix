@@ -42,6 +42,8 @@
 
     rust-overlay.url = "github:oxalica/rust-overlay";
     rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
+
+    emacs-overlay.url = "github:nix-community/emacs-overlay";
   };
 
   outputs = {
@@ -55,6 +57,7 @@
     homeage,
     nixos-wsl,
     rust-overlay,
+    emacs-overlay,
     ...
   } @ inputs:
     digga.lib.mkFlake
@@ -66,6 +69,7 @@
           imports = [(digga.lib.importOverlays ./overlays)];
           overlays = [
             rust-overlay.overlays.default
+            emacs-overlay.overlays.default
             ./pkgs/default.nix
           ];
         };
@@ -112,18 +116,8 @@
           profiles = digga.lib.rakeLeaves ./home/profiles;
           suites = with profiles; rec {
             base = [];
-            dev = base ++ [dev-tools zsh];
-            dev-nvim =
-              dev
-              ++ [
-                nvim
-                lang.c
-                lang.lua
-                lang.nix
-                lang.nodejs
-                lang.rust
-                lang.python
-              ];
+            langs = [lang.c lang.lua lang.nix lang.nodejs lang.rust lang.python];
+            dev = base ++ langs ++ [dev-tools zsh nvim emacs];
           };
         };
         users = {
@@ -132,7 +126,7 @@
             suites,
             ...
           }: {
-            imports = suites.dev-nvim;
+            imports = suites.dev;
             home.stateVersion = "22.11";
             home.sessionVariables = {
               EDITOR = "nvim";
