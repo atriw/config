@@ -27,7 +27,7 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)
-      opts.indent["disable"] = nil
+      opts.indent["disable"] = { "nix" }
     end,
   },
   {

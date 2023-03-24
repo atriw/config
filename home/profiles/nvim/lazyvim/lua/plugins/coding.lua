@@ -6,7 +6,10 @@ return {
   {
     "windwp/nvim-autopairs",
     event = "VeryLazy",
-    config = true,
+    opts = {
+      disable_filetype = { "nix" },
+      fast_wrap = {},
+    },
   },
   {
     "hrsh7th/nvim-cmp",
