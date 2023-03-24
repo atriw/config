@@ -32,6 +32,8 @@ run_dir: Path = None
 
 console = Console()
 
+error_console = Console(stderr=True)
+
 log = logging.getLogger("rich")
 
 
@@ -205,7 +207,7 @@ def log_level_callback(log_level: LogLevel):
         level=log_level.value,
         format="%(message)s",
         datefmt="[%X]",
-        handlers=[RichHandler(rich_tracebacks=True)],
+        handlers=[RichHandler(console=error_console, rich_tracebacks=True)],
     )
     return log_level
 
@@ -241,6 +243,7 @@ def main(
     ),
     model: Model = typer.Option(Model.GPT35),
     temperature: float = typer.Option(0, max=1),
+    dry_run: bool = typer.Option(False, help="Run without calling API"),
     chunk_lines: int = typer.Option(
         0,
         min=0,
@@ -320,7 +323,7 @@ def main(
 
     messages = Messages(get_query(query), get_chunks(chunk_lines))
 
-    if not messages.is_valid():
+    if not dry_run and not messages.is_valid():
         console.print("No query provided")
         raise typer.Exit(code=1)
 
@@ -328,18 +331,20 @@ def main(
         messages.session = try_load_session(session_path)
     messages.system = get_system_prompts(system_prompt_files)
 
-    result = process_chat(
-        messages, lambda messages: chat(model.value, messages, temperature)
-    )
+    result: Optional[str] = None
+    if not dry_run:
+        result = process_chat(
+            messages, lambda messages: chat(model.value, messages, temperature)
+        )
 
-    short_result = textwrap.shorten(result, width=70)
-    log.debug(f"Short result: {short_result}")
+        short_result = textwrap.shorten(result, width=70)
+        log.debug(f"Short result: {short_result}")
 
-    # Chunks are too large to fit a session.
-    try_write_session(
-        last_session_path,
-        list(chain(messages.get_prompts(), [assistant_message(result)])),
-    )
+        # Chunks are too large to fit a session.
+        try_write_session(
+            last_session_path,
+            list(chain(messages.get_prompts(), [assistant_message(result)])),
+        )
 
     def print_output():
         renderables = format(messages, result, with_panel, full_session, only_result)
@@ -387,7 +392,7 @@ def process_chat(
 
 def format(
     messages: Messages,
-    result: str,
+    result: Optional[str],
     with_panel: bool,
     full_session: bool,
     only_result: bool,
@@ -397,7 +402,9 @@ def format(
             return obj
         return Panel(obj, title=title, border_style=border_style)
 
-    result_rendered = wrap(Markdown(result), title="Answer", border_style="green")
+    result_rendered = (
+        wrap(Markdown(result), title="Answer", border_style="green") if result else ""
+    )
     if only_result:
         return [result_rendered]
     outputs = []
