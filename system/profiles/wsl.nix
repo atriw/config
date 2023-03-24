@@ -5,7 +5,9 @@
 }: {
   wsl = {
     enable = true;
-    automountPath = "/mnt";
     startMenuLaunchers = true;
+    wslConf = {
+      interop.appendWindowsPath = false;
+    };
   };
 }

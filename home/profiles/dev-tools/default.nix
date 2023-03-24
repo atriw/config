@@ -21,6 +21,7 @@
     cloc
     shellcheck
     just # make
+    xonsh
   ];
   program_list = [
     "git"
