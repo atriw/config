@@ -4,5 +4,12 @@
   pkgs,
   ...
 }: {
-  home.packages = with pkgs; [gcc gnumake];
+  home.packages = with pkgs; [
+    clang
+    clang-tools
+    lldb
+    gnumake
+    bear
+    vscode-extensions.vadimcn.vscode-lldb
+  ];
 }
