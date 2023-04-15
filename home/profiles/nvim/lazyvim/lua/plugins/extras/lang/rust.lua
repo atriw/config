@@ -1,3 +1,5 @@
+local lang = require("lib.lang")
+
 return {
 
   -- extend auto completion
@@ -45,16 +47,8 @@ return {
               vim.keymap.set("n", "K", "<CMD>RustHoverActions<CR>", { buffer = buffer })
             end
           end)
-          local dap = {}
-          if vim.g.codelldb_path then
-            local extension_path = vim.g.codelldb_path
-            local codelldb_path = extension_path .. "adapter/codelldb"
-            local liblldb_path = vim.fn.has("mac") == 1 and extension_path .. "lldb/lib/liblldb.dylib"
-              or extension_path .. "lldb/lib/liblldb.so"
-            dap.adapter = require("rust-tools.dap").get_codelldb_adapter(codelldb_path, liblldb_path)
-          end
           local rust_tools_opts = vim.tbl_deep_extend("force", opts, {
-            dap = dap, 
+            dap = { adapter = lang.get_codelldb_adapter() },
             tools = {
               hover_actions = {
                 auto_focus = false,
