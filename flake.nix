@@ -34,9 +34,6 @@
     agenix.url = "github:ryantm/agenix";
     agenix.inputs.nixpkgs.follows = "nixpkgs";
 
-    homeage.url = "github:jordanisaacs/homeage";
-    homeage.inputs.nixpkgs.follows = "nixpkgs";
-
     nixos-wsl.url = "github:nix-community/NixOS-WSL";
     nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -54,7 +51,6 @@
     home-manager,
     digga,
     agenix,
-    homeage,
     nixos-wsl,
     rust-overlay,
     emacs-overlay,
@@ -97,7 +93,6 @@
             {lib.our = self.lib;}
             digga.nixosModules.nixConfig
             home-manager.nixosModules.home-manager
-            agenix.nixosModules.age
           ];
         };
         hosts = {
@@ -109,9 +104,7 @@
 
       home = {
         imports = [(digga.lib.importExportableModules ./home/modules)];
-        modules = [
-          homeage.homeManagerModules.homeage
-        ];
+        modules = [];
         importables = rec {
           profiles = digga.lib.rakeLeaves ./home/profiles;
           suites = with profiles; rec {
@@ -121,11 +114,7 @@
           };
         };
         users = {
-          atriw = {
-            self,
-            suites,
-            ...
-          }: {
+          atriw = {suites, ...}: {
             imports = suites.dev;
             home.stateVersion = "22.11";
             home.sessionVariables = {
@@ -135,13 +124,6 @@
             configDir = ./config;
             programs.git.userName = "atriw";
             programs.git.userEmail = "875241499@qq.com";
-            homeage = {
-              identityPaths = ["~/.ssh/id_ed25519"];
-              installationType = "activation";
-              file."git-wsl" = {
-                source = "${self}/secrets/git-wsl.age";
-              };
-            };
           };
         };
       };
