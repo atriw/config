@@ -9,12 +9,13 @@ function M.add_treesitter_install(lang)
   }
 end
 
-function M.add_lsp_config(lsp)
+function M.add_lsp_config(lsp, opts)
+  opts = opts or {}
   return {
     "neovim/nvim-lspconfig",
     opts = {
       servers = {
-        [lsp] = { mason = false },
+        [lsp] = vim.tbl_deep_extend("keep", { mason = false }, opts),
       },
     },
   }

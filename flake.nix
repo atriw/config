@@ -116,7 +116,7 @@
           profiles = digga.lib.rakeLeaves ./home/profiles;
           suites = with profiles; rec {
             base = [];
-            langs = [lang.c lang.lua lang.nix lang.nodejs lang.rust lang.python];
+            langs = [lang.c lang.lua lang.nix lang.nodejs lang.rust lang.python lang.elixir];
             dev = base ++ langs ++ [dev-tools zsh nvim emacs];
           };
         };
