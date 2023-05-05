@@ -1,0 +1,27 @@
+super + Return
+  alacritty
+
+super + ctrl + Return
+  xterm
+
+super + grave
+  alacritty # TODO: scratch shell
+
+super + space
+  rofi -show drun
+
+super + Tab
+  rofi -show window
+
+super + Escape
+  pkill -USR1 -x sxhkd
+
+super + alt + Escape
+  bspc quit
+
+super + {h,j,k,l}
+  bspc node -f {west,south,north,east}.local
+
+super + q; super + {_,shift+}q
+  bspc node -{c,k}
+

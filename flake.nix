@@ -103,7 +103,6 @@
           enigma = {
             modules = [
               nixos-hardware.nixosModules.common-cpu-intel
-              nixos-hardware.nixosModules.common-gpu-nvidia
               nixos-hardware.nixosModules.common-pc
               nixos-hardware.nixosModules.common-pc-laptop
               nixos-hardware.nixosModules.common-pc-laptop-ssd
@@ -121,11 +120,12 @@
             base = [];
             langs = [lang.c lang.lua lang.nix lang.nodejs lang.rust lang.python lang.elixir];
             dev = base ++ langs ++ [dev-tools zsh nvim emacs];
+            laptop = dev ++ [desktop];
           };
         };
         users = {
           atriw = {suites, ...}: {
-            imports = suites.dev;
+            imports = suites.laptop;
             home.stateVersion = "22.11";
             home.sessionVariables = {
               EDITOR = "nvim";
