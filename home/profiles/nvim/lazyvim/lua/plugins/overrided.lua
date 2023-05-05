@@ -103,7 +103,7 @@ return {
           require("telescope").load_extension("file_browser")
         end,
         keys = {
-          { "<leader>fb", "<cmd>Telescope file_browser path=%:p:h select_buffer=true", desc = "File browser" },
+          { "<leader>fb", "<cmd>Telescope file_browser path=%:p:h select_buffer=true<cr>", desc = "File browser" },
         },
       },
     },
