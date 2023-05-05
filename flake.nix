@@ -83,6 +83,7 @@
           suites = with profiles; rec {
             base = [core.nixos users];
             wsl-dev = base ++ [wsl];
+            laptop = base ++ [desktop];
           };
         };
         hostDefaults = {
@@ -96,8 +97,17 @@
           ];
         };
         hosts = {
-          Matrix = {
+          matrix = {
             modules = [nixos-wsl.nixosModules.wsl];
+          };
+          enigma = {
+            modules = [
+              nixos-hardware.nixosModules.common-cpu-intel
+              nixos-hardware.nixosModules.common-gpu-nvidia
+              nixos-hardware.nixosModules.common-pc
+              nixos-hardware.nixosModules.common-pc-laptop
+              nixos-hardware.nixosModules.common-pc-laptop-ssd
+            ];
           };
         };
       };
