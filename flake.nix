@@ -41,6 +41,8 @@
     rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
 
     emacs-overlay.url = "github:nix-community/emacs-overlay";
+
+    twdesktop.url = "github:TiddlyWiki/TiddlyDesktop";
   };
 
   outputs = {
@@ -54,6 +56,7 @@
     nixos-wsl,
     rust-overlay,
     emacs-overlay,
+    twdesktop,
     ...
   } @ inputs:
     digga.lib.mkFlake
@@ -67,6 +70,7 @@
             rust-overlay.overlays.default
             emacs-overlay.overlays.default
             ./pkgs/default.nix
+            (final: prev: {twdesktop = twdesktop.packages.x86_64-linux.default;})
           ];
         };
         latest = {};
@@ -92,6 +96,7 @@
           imports = [(digga.lib.importExportableModules ./system/modules)];
           modules = [
             {lib.our = self.lib;}
+            {configDir = ./config;}
             digga.nixosModules.nixConfig
             home-manager.nixosModules.home-manager
           ];
@@ -131,6 +136,7 @@
               EDITOR = "nvim";
               SHELL = "zsh";
             };
+            xdg.enable = true;
             configDir = ./config;
             programs.git.userName = "atriw";
             programs.git.userEmail = "875241499@qq.com";

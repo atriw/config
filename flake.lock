@@ -374,6 +374,22 @@
         "type": "github"
       }
     },
+    "nixpkgs_3": {
+      "locked": {
+        "lastModified": 1670273049,
+        "narHash": "sha256-zuDhKsNUHLucIHLagrS2R91TT70D7zSyai+UaEirzvs=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "cc6635027a8fadd3aaaab6b1d14bc2c2df688151",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "master",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "agenix": "agenix",
@@ -385,7 +401,8 @@
         "nixos-hardware": "nixos-hardware",
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs_2",
-        "rust-overlay": "rust-overlay"
+        "rust-overlay": "rust-overlay",
+        "twdesktop": "twdesktop"
       }
     },
     "rust-overlay": {
@@ -406,6 +423,24 @@
       "original": {
         "owner": "oxalica",
         "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "twdesktop": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_3"
+      },
+      "locked": {
+        "lastModified": 1681209459,
+        "narHash": "sha256-FhnRIu24BbmvE+UaGqs4DP+tmUz3FNr6bud4myBp8Po=",
+        "owner": "TiddlyWiki",
+        "repo": "TiddlyDesktop",
+        "rev": "0b57a6f11c51fe09ab723486b4c507e388c04964",
+        "type": "github"
+      },
+      "original": {
+        "owner": "TiddlyWiki",
+        "repo": "TiddlyDesktop",
         "type": "github"
       }
     },

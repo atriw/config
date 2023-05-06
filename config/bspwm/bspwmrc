@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+pgrep -x sxhkd > /dev/null || sxhkd &
+
+bspc monitor -d I II III IV V VI VII VIII IX X
+
+bspc config border_width         2
+bspc config window_gap          12
+
+bspc config split_ratio          0.52
+bspc config borderless_monocle   true
+bspc config gapless_monocle      true
+
+bspc rule -r "*"
+
+bspc rule -a Firefox split_ratio=0.32
+
+if [[ $1 -eq 0 ]]; then
+  for file in $XDG_CONFIG_HOME/bspwm/rc.d/*; do
+    source "$file"
+  done
+fi
