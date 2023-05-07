@@ -6,9 +6,9 @@
 }: {
   modules = {
     desktop = {
-      basic = true;
-      theme = true;
-      apps = true;
+      basic.enable = true;
+      theme.enable = true;
+      apps.enable = true;
     };
   };
 }

@@ -10,5 +10,9 @@ with lib; {
       type = path;
       default = "/config";
     };
+    dataDir = mkOption {
+      type = path;
+      default = "/usr/share";
+    };
   };
 }

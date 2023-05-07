@@ -5,8 +5,6 @@ channels: final: prev: {
     (channels.latest)
     cachix
     neovim-unwrapped
-    elixir
-    erlang
-    elixir_ls
+    catppuccin-gtk
     ;
 }

@@ -6,7 +6,7 @@
 }:
 with lib; let
   cfg = config.modules.desktop.theme;
-  inherit (config) configDir;
+  inherit (config) configDir dataDir;
 in {
   options = {
     modules.desktop.theme = {
@@ -15,17 +15,21 @@ in {
   };
 
   config = mkIf cfg.enable {
-    programs.rofi = {
-      theme = "purple";
-      font = "Inter 18";
+    xdg.configFile = {
+      "rofi" = {
+        source = "${configDir}/rofi/";
+        recursive = true;
+      };
+      "alacritty" = {
+        source = "${configDir}/alacritty/";
+        recursive = true;
+      };
     };
 
-    programs.alacritty = {
-      settings = {
-        font = {
-          normal = {family = "FiraCode Nerd Font";};
-          size = 20.0;
-        };
+    xdg.dataFile = {
+      "rofi" = {
+        source = "${dataDir}/rofi/";
+        recursive = true;
       };
     };
 
@@ -37,8 +41,13 @@ in {
     gtk = {
       enable = true;
       theme = {
-        name = "Layan";
-        package = pkgs.layan-gtk-theme;
+        name = "Catppuccin-Macchiato-Compact-Pink-Dark";
+        package = pkgs.catppuccin-gtk.override {
+          accents = ["pink"];
+          size = "compact";
+          tweaks = ["rimless" "black"];
+          variant = "macchiato";
+        };
       };
     };
 
