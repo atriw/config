@@ -9,7 +9,7 @@
 
   users.users.atriw = {
     isNormalUser = true;
-    extraGroups = ["wheel" "networkmanager"];
+    extraGroups = ["wheel" "networkmanager" "audio"];
     shell = pkgs.zsh;
     # TODO: use agenix
     password = "nixos";

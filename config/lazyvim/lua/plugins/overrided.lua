@@ -37,6 +37,8 @@ return {
       return {}
     end,
   },
+  { "catppuccin/nvim", name = "catppuccin" },
+  { "LazyVim/LazyVim", opts = { colorscheme = "catppuccin-frappe" } },
   {
     "hrsh7th/nvim-cmp",
     dependencies = {

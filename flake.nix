@@ -40,8 +40,6 @@
     rust-overlay.url = "github:oxalica/rust-overlay";
     rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
 
-    emacs-overlay.url = "github:nix-community/emacs-overlay";
-
     twdesktop.url = "github:TiddlyWiki/TiddlyDesktop";
   };
 
@@ -55,7 +53,6 @@
     agenix,
     nixos-wsl,
     rust-overlay,
-    emacs-overlay,
     twdesktop,
     ...
   } @ inputs:
@@ -68,7 +65,6 @@
           imports = [(digga.lib.importOverlays ./overlays)];
           overlays = [
             rust-overlay.overlays.default
-            emacs-overlay.overlays.default
             ./pkgs/default.nix
             (final: prev: {twdesktop = twdesktop.packages.x86_64-linux.default;})
           ];
@@ -118,26 +114,27 @@
 
       home = {
         imports = [(digga.lib.importExportableModules ./home/modules)];
-        modules = [];
+        modules = [
+          {
+            configDir = ./config;
+            xdg.enable = true;
+          }
+        ];
         importables = rec {
           profiles = digga.lib.rakeLeaves ./home/profiles;
           suites = with profiles; rec {
-            base = [];
-            langs = [lang.c lang.lua lang.nix lang.nodejs lang.rust lang.python lang.elixir];
-            dev = base ++ langs ++ [dev-tools zsh nvim emacs];
-            laptop = dev ++ [desktop];
+            wsl = [base];
+            laptop = [base desktop];
           };
         };
         users = {
           atriw = {suites, ...}: {
-            imports = suites.laptop;
+            imports = suites.wsl;
             home.stateVersion = "22.11";
             home.sessionVariables = {
               EDITOR = "nvim";
               SHELL = "zsh";
             };
-            xdg.enable = true;
-            configDir = ./config;
             programs.git.userName = "atriw";
             programs.git.userEmail = "875241499@qq.com";
           };

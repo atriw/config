@@ -91,6 +91,7 @@
       source-han-sans
       source-han-serif
       sarasa-gothic
+      inter
       source-sans-pro
       source-serif-pro
       (nerdfonts.override {fonts = ["Iosevka" "FiraCode"];})
@@ -105,6 +106,7 @@
         monospace = [
           "Noto Sans Mono CJK SC"
           "Sarasa Mono SC"
+          "Inter"
           "Iosevka"
           "FiraCode Nerd Font"
         ];

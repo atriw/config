@@ -6,7 +6,7 @@
 }:
 with lib; let
   cfg = config.programs.chat;
-  configDir = config.configDir;
+  inherit (config) configDir;
 in {
   options = {
     programs.chat = {
