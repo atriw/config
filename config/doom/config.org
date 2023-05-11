@@ -1,0 +1,17 @@
+#+TITLE: Doom Emacs Config
+#+PROPERTY: header-args:emacs-lisp :noweb yes :results none :tangle config.el
+
+#+begin_src emacs-lisp
+;;; -*- lexical-binding: t; -*-
+
+
+#+end_src
+
+* UI
+#+begin_src emacs-lisp
+(setq doom-font (font-spec :family "Source Code Pro for Powerline" :size 18))
+(setq doom-theme 'doom-one)
+(setq doom-modeline-height 30
+      doom-modeline-bar-width 5)
+(add-hook! 'emacs-startup-hook #'doom-init-ui-h)
+#+end_src

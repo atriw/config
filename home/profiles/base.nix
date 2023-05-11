@@ -6,6 +6,7 @@
 }: {
   modules = {
     lazyvim.enable = true;
+    doomemacs.enable = true;
     shell = {
       zsh.enable = true;
       tools.enable = true;

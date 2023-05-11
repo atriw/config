@@ -41,6 +41,11 @@
     rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
 
     twdesktop.url = "github:TiddlyWiki/TiddlyDesktop";
+
+    emacs-overlay.url = "github:nix-community/emacs-overlay";
+
+    nix-doom-emacs.url = "github:nix-community/nix-doom-emacs";
+    nix-doom-emacs.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
@@ -54,6 +59,8 @@
     nixos-wsl,
     rust-overlay,
     twdesktop,
+    emacs-overlay,
+    nix-doom-emacs,
     ...
   } @ inputs:
     digga.lib.mkFlake
@@ -64,7 +71,6 @@
         nixpkgs = {
           imports = [(digga.lib.importOverlays ./overlays)];
           overlays = [
-            rust-overlay.overlays.default
             ./pkgs/default.nix
             (final: prev: {twdesktop = twdesktop.packages.x86_64-linux.default;})
           ];
@@ -74,6 +80,8 @@
 
       sharedOverlays = [
         agenix.overlays.default
+        rust-overlay.overlays.default
+        emacs-overlay.overlays.default
       ];
 
       nixos = {
@@ -120,6 +128,7 @@
             dataDir = ./share;
             xdg.enable = true;
           }
+          nix-doom-emacs.hmModule
         ];
         importables = rec {
           profiles = digga.lib.rakeLeaves ./home/profiles;
@@ -130,7 +139,7 @@
         };
         users = {
           atriw = {suites, ...}: {
-            imports = suites.laptop;
+            imports = suites.wsl;
             home.stateVersion = "22.11";
             home.sessionVariables = {
               EDITOR = "nvim";
