@@ -139,7 +139,7 @@
         };
         users = {
           atriw = {suites, ...}: {
-            imports = suites.wsl;
+            imports = suites.laptop;
             home.stateVersion = "22.11";
             home.sessionVariables = {
               EDITOR = "nvim";

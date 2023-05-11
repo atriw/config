@@ -9,6 +9,7 @@
     earlySetup = true;
     font = "${pkgs.terminus_font}/share/consolefonts/ter-132n.psf.gz";
     packages = with pkgs; [terminus_font];
+    useXkbConfig = true;
   };
 
   environment.sessionVariables = {
@@ -23,6 +24,10 @@
     windowManager = {
       bspwm = {
         enable = true;
+        configFile = "${config.configDir}/bspwm/bspwmrc";
+        sxhkd = {
+          configFile = "${config.configDir}/sxhkd/sxhkdrc";
+        };
       };
     };
     displayManager = {
@@ -50,7 +55,7 @@
       touchpad.naturalScrolling = true;
       touchpad.disableWhileTyping = true;
     };
-    dpi = 150;
+    xkbOptions = "ctrl:nocaps";
   };
 
   services.picom = {
@@ -143,9 +148,7 @@
       source-serif-pro
       (nerdfonts.override {fonts = ["Iosevka" "FiraCode"];})
 
-      material-design-icons
       font-awesome
-      meslo-lgs-nf
     ];
     fontconfig = {
       defaultFonts = {
@@ -189,7 +192,10 @@
       pulseSupport = true;
     })
     firefox
+    pavucontrol
   ];
+
+  programs.light.enable = true;
 
   programs.dconf.enable = true;
 }

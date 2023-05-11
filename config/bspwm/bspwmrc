@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-pgrep -x sxhkd > /dev/null || sxhkd &
-
 bspc monitor -d I II III IV V VI VII VIII IX X
 
 bspc config border_width            2
@@ -29,8 +27,8 @@ bspc config pointer_action3         resize_corner
 
 bspc rule -r "*"
 
-if [[ $1 -eq 0 ]]; then
-  for file in $XDG_CONFIG_HOME/bspwm/rc.d/*; do
-    source "$file"
-  done
-fi
+# polybar
+
+killall -q polybar
+
+polybar bar 2>&1 | tee -a /tmp/polybar.log & disown

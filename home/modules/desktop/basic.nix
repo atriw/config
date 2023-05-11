@@ -20,15 +20,6 @@ in {
     programs.alacritty.enable = true;
 
     xdg.configFile = {
-      "sxhkd" = {
-        source = "${configDir}/sxhkd";
-        recursive = true;
-      };
-      "bspwm" = {
-        source = "${configDir}/bspwm";
-        recursive = true;
-      };
-      "bspwm/rc.d/99-polybar".source = "${configDir}/polybar/launch.sh";
       "polybar" = {
         source = "${configDir}/polybar";
         recursive = true;

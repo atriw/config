@@ -14,8 +14,9 @@ in {
   };
 
   config = mkIf cfg.enable {
-    home.packages = [
-      pkgs.twdesktop
+    home.packages = with pkgs; [
+      twdesktop
+      neovide
     ];
   };
 }
